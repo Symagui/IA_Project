@@ -1,3 +1,9 @@
+# Data
+census.tar.gz
+census-income.data
+census-income.names
+census-income.test
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
