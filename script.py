@@ -1,7 +1,6 @@
 # coding: utf8
 
 import csv
-from itertools import ifilterfalse
 
 final_classes = [];
 
@@ -9,14 +8,14 @@ ROW_TO_READ = 1;
 
 #Fonction de filtrage des commentaires et des lignes vides dans le fichier census-income.names
 def iscomment(s):
-   return s.startswith('|') or not s.strip();
+   return not (s.startswith('|') or not s.strip());
 
 
 #Recuperation des differents attributs, de leurs valeurs possibles et des differentes classes dans le fichier census-income.names
 with open("census-income.names", 'r') as f:
     first = True;
     #On recupere les lignes non inutiles
-    for line in ifilterfalse(iscomment, f):
+    for line in filter(iscomment, f):
 
         #La première ligne est traitee differement des autres car elle ne contient que les classes finales, et pas de nom supplementaire
         if (first):
