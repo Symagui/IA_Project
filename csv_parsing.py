@@ -2,8 +2,23 @@
 
 import csv
 
-def parse(nameFile, dataFile):
-    return [0,0,0,0]
+def parse(nameFile, dataFile, options = {}):
+    
+    input = []
+    output = []
+    input_names_correspondances = []
+    output_names_correspondances = []
+    
+    
+    if not options.has_key("ignore"):
+        options["ignore"] = []
+    if not options.has_key("ignoreColumnThresold"):
+        options["ignoreColumnThresold"] = 1
+    
+
+    
+
+    return [input,output,input_names_correspondances,output_names_correspondances]
 
 final_classes = [];
 
