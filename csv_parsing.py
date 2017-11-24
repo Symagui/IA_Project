@@ -2,6 +2,9 @@
 
 import csv
 
+def parse(nameFile, dataFile):
+    return [0,0,0,0]
+
 final_classes = [];
 
 ROW_TO_READ = 1;
