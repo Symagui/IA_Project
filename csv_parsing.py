@@ -1,105 +1,94 @@
 # coding: utf8
 
 import csv
-
-def parse(nameFile, dataFile, options = {}):
-    
-    input = []
-    output = []
-    input_names_correspondances = []
-    output_names_correspondances = []
-    
-    
-    if not options.has_key("ignore"):
-        options["ignore"] = []
-    if not options.has_key("ignoreColumnThresold"):
-        options["ignoreColumnThresold"] = 1
-    
-
-    
-
-    return [input,output,input_names_correspondances,output_names_correspondances]
-
-final_classes = [];
-
-ROW_TO_READ = 1;
-
-row_names_correspondances = [];
-database = [];
+import numpy as np
 
 #Fonction de filtrage des commentaires et des lignes vides dans le fichier census-income.names
 def iscomment(s):
    return not (s.startswith('|') or not s.strip());
 
+def parse(nameFile, dataFile, options = {}):
 
-#Recuperation des differents attributs, de leurs valeurs possibles et des differentes classes dans le fichier census-income.names
-with open("census-income.names", 'r') as f:
-    first = True;
-    #On recupere les lignes non inutiles
-    for line in filter(iscomment, f):
+    input = []
+    output = []
+    input_names = []
+    output_names = []
 
-        #La première ligne est traitee differement des autres car elle ne contient que les classes finales, et pas de nom supplementaire
-        if (first):
-            first = not first;
-            #Un peu de magie qui split la ligne selon le csv, la strip et la mets dans un array
-            final_classes = [classe.strip() for classe in line.split(',')]
+    if not options.has_key("ignore"):
+        options["ignore"] = []
+    if not options.has_key("ignoreColumnThresold"):
+        options["ignoreColumnThresold"] = 1
 
-            #Suppression du POINT a la fin de la derniere classe
-            final_classes[-1] = final_classes[-1][:-1]
+    with open(nameFile, 'r') as f:
 
-            #Juste un print de test
-            """
-            for classe in classes:
-                print(classe);
-            """
-        else :
+        i = 0;
+        first = True;
+        #On recupere les lignes non inutiles
+        for line in filter(iscomment, f):
 
-            linesplitted = [temp.strip() for temp in line.split(':')]
+            #La première ligne est traitee differement des autres car elle ne contient que les classes finales, et pas de nom supplementaire
+            if (first):
+                first = not first;
 
-            #On recupere le nom de la ligne
-            for subline in linesplitted[:-1] :
-                print("col : " + subline)
-            #On recupere la liste des valeurs associees a ce nom
-            else:
-                #Pour chaque valeur on strip et on enlève le POINT de la dernière valeur
-                values = [value.strip() for value in linesplitted[-1].split(',')]
-                values[-1] = values[-1][:-1]
-                row_names_correspondances.append(values);
+                #Un peu de magie qui split la ligne selon le csv, la strip et la mets dans un array
+                final_classes = [classe.strip() for classe in line.split(',')]
 
-#print final_classes;
+                #Suppression du POINT a la fin de la derniere classe
+                final_classes[-1] = final_classes[-1][:-1]
 
+            else :
 
-#La section suivante traite le document csv data et en sort les valeurs
-with open("census-income.data", 'r') as csvfile:
+                linesplitted = [temp.strip() for temp in line.split(':')]
 
-    #Lis le csv en virant les espaces inutiles
-    reader = csv.reader(csvfile, skipinitialspace=True)
-    i = 0;
+                #On recupere le nom de la ligne
+                for subline in linesplitted[:-1] :
+                    if i not in options["ignore"]:
+                        input_names.append(subline)
 
-    #On lit chaque ligne pour le pretraitement
-    for row in reader:
+                i+=1
 
-        row_transformed = [];
+    with open(dataFile, 'r') as csvfile:
+        #Lis le csv en virant les espaces inutiles
+        reader = csv.reader(csvfile, skipinitialspace=True)
+        i = 0;
 
-        #Il faut separer le pretraitement de chaque valeur puisque les valeurs nominales devront passer par la librairie
-        #De plus, on doit traiter separement la derniere valeur du csv puisque les lignes finissent par un POINT.
-        for index, string in enumerate(row[:-1]) :
-            value = string[:-1] if len(row)-1==index else string;
+        csv_unknown_counts = None;
 
-            print(index);
+        #On lit chaque ligne pour le pretraitement
+        for row in reader:
 
-            if value in row_names_correspondances[index]:
-                value_transformed = row_names_correspondances[index].index(value);
-            else:
-                value_transformed = -1 if value=="?" else float(value);
+            row_transformed = [];
 
-            row_transformed.append(value_transformed);
+            if csv_unknown_counts == None:
+                csv_unknown_counts = np.zeros(len(row)-1)
 
-        if (i == ROW_TO_READ):
-            break;
+            for index, string in enumerate(row[:-1]) :
 
-        database.append(row_transformed);
+                if i in options["ignore"]:
+                    break
 
-        i += 1;
+                #If not ignored
+                value = string[:-1] if len(row)-1==index else string;
 
-print("Converting database done.");
+                if value=="?":
+                    csv_unknown_counts[index] += 1
+
+                try:
+                    value_transformed = float(value)
+                except ValueError:
+                    value_transformed = value
+
+                row_transformed.append(value_transformed);
+
+            if (i%1000 == 0):
+                print(i)
+
+            input.append(row_transformed);
+
+            i += 1;
+
+        csv_unknown_coefs = [float(x)/float(i) for x in csv_unknown_counts];
+
+        print (csv_unknown_coefs)
+
+    return [input,output,input_names,output_names]
