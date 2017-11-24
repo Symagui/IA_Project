@@ -14,10 +14,14 @@ def parse(nameFile, dataFile, options = {}):
     input_names = []
     output_names = []
 
+    unknown_element_by_row = []
+
     if not options.has_key("ignore"):
         options["ignore"] = []
     if not options.has_key("ignoreColumnThresold"):
         options["ignoreColumnThresold"] = 1
+    if not options.has_key("report"):
+        options["report"] = True
 
     with open(nameFile, 'r') as f:
 
@@ -58,29 +62,37 @@ def parse(nameFile, dataFile, options = {}):
         for row in reader:
 
             row_transformed = [];
+            unknown_element_by_row.append(0);
 
             if csv_unknown_counts == None:
                 csv_unknown_counts = np.zeros(len(row)-1)
 
-            for index, string in enumerate(row[:-1]) :
+            for index, value in enumerate(row) :
 
-                if i in options["ignore"]:
-                    break
+                if index<len(row)-len(options["ignore"]) :
 
-                #If not ignored
-                value = string[:-1] if len(row)-1==index else string;
+                    if index in options["ignore"]:
+                        continue
 
-                if value=="?":
-                    csv_unknown_counts[index] += 1
+                    if value=="?":
+                        csv_unknown_counts[index] += 1
+                        unknown_element_by_row[i] += 1;
 
-                try:
-                    value_transformed = float(value)
-                except ValueError:
-                    value_transformed = value
+                    try:
+                        value_transformed = float(value)
+                    except ValueError:
+                        value_transformed = value
 
-                row_transformed.append(value_transformed);
+                    row_transformed.append(value_transformed);
 
-            if (i%1000 == 0):
+                else :
+                    #Classe resultat
+                    value = value[:-1]; #La dernière ligne contient un . final
+                    if value not in output_names:
+                        output_names.append(value)
+                    output.append(output_names.index(value));
+
+            if (i%10000 == 0):
                 print(i)
 
             input.append(row_transformed);
@@ -89,6 +101,32 @@ def parse(nameFile, dataFile, options = {}):
 
         csv_unknown_coefs = [float(x)/float(i) for x in csv_unknown_counts];
 
-        print (csv_unknown_coefs)
+        ignore = []
+        column_ignored = 0
+        for index, value in enumerate(csv_unknown_coefs):
+            if value>options["ignoreColumnThresold"]:
+                #On élimine les lignes pas intéressantes qui sont donc dans ignore
+                del input_names[index-column_ignored]
+                np.delete(input, index-column_ignored, 1)
+                ignore.append(index)
+                column_ignored += 1
+
+        #Update unknown columns by row
+        unknown_element_by_row = [x-column_ignored for x in unknown_element_by_row]
+
+        #Remove not fully known rows
+        deleted_row = 0
+        for index, value in enumerate(unknown_element_by_row):
+            if value>0:
+                del input[index-deleted_row]
+                del output[index-deleted_row]
+                deleted_row+=1;
+
+        if options["report"]:
+            print ("Deleted columns : ("+str(column_ignored)+") "+str(ignore))
+            print ("Deleted columns coefs : "+str(csv_unknown_coefs))
+            print ("Deleted rows because not fully known : "+str(deleted_row))
+            print ("Total rows read : "+str(i))
+
 
     return [input,output,input_names,output_names]
