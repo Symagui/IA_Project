@@ -103,13 +103,16 @@ def parse(nameFile, dataFile, options = {}):
 
         ignore = []
         column_ignored = 0
+        input = np.array(input, dtype=object)
         for index, value in enumerate(csv_unknown_coefs):
             if value>options["ignoreColumnThresold"]:
                 #On élimine les lignes pas intéressantes qui sont donc dans ignore
                 del input_names[index-column_ignored]
-                np.delete(input, index-column_ignored, 1)
+                input = np.delete(input, index-column_ignored, 1)
                 ignore.append(index)
                 column_ignored += 1
+
+        input = input.tolist()
 
         #Update unknown columns by row
         unknown_element_by_row = [x-column_ignored for x in unknown_element_by_row]
@@ -129,4 +132,4 @@ def parse(nameFile, dataFile, options = {}):
             print ("Total rows read : "+str(i))
 
 
-    return [input,output,input_names,output_names]
+    return [input,output,input_names,output_names, ignore+options["ignore"]]

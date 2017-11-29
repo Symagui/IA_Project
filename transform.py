@@ -13,8 +13,5 @@ def computeInputTreeArray(dicoList) :
 def transform(values, names) :
 	return computeInputTreeArray(computeDico(values, names))
 
-
-values = [["verte", "rouge"], ["bleu", "rose"]]
-names = ["bananes", "tomates"]
-print(computeDico(values, names))
-print(transform(values, names)[1])
+def transform_test(values, names, tranformer) :
+	return tranformer.transform(computeDico(values, names)).toarray()
