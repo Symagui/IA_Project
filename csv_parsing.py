@@ -16,11 +16,11 @@ def parse(nameFile, dataFile, options = {}):
 
     unknown_element_by_row = []
 
-    if not options.has_key("ignore"):
+    if not "ignore" in options:
         options["ignore"] = []
-    if not options.has_key("ignoreColumnThresold"):
+    if not "ignoreColumnThresold" in options:
         options["ignoreColumnThresold"] = 1
-    if not options.has_key("report"):
+    if not "report" in options:
         options["report"] = True
 
     with open(nameFile, 'r') as f:
@@ -64,7 +64,7 @@ def parse(nameFile, dataFile, options = {}):
             row_transformed = [];
             unknown_element_by_row.append(0);
 
-            if csv_unknown_counts == None:
+            if csv_unknown_counts is None:
                 csv_unknown_counts = np.zeros(len(row)-1)
 
             for index, value in enumerate(row) :
