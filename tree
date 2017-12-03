@@ -1,0 +1,21 @@
+digraph Tree {
+node [shape=box, style="rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<capital gains &le; 7364.0<br/>gini = 0.116<br/>samples = 195258<br/>value = [183241, 12017]<br/>class = - 50000>] ;
+1 [label=<weeks worked in year &le; 47.5<br/>gini = 0.099<br/>samples = 192608<br/>value = [182508, 10100]<br/>class = - 50000>] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<gini = 0.019<br/>samples = 120517<br/>value = [119352, 1165]<br/>class = - 50000>] ;
+1 -> 2 ;
+3 [label=<detailed occupation recode &le; 18.5<br/>gini = 0.217<br/>samples = 72091<br/>value = [63156, 8935]<br/>class = - 50000>] ;
+1 -> 3 ;
+4 [label=<dividends from stocks &le; 87.5<br/>gini = 0.357<br/>samples = 29363<br/>value = [22545, 6818]<br/>class = - 50000>] ;
+3 -> 4 ;
+5 [label=<gini = 0.296<br/>samples = 24153<br/>value = [19791, 4362]<br/>class = - 50000>] ;
+4 -> 5 ;
+6 [label=<gini = 0.498<br/>samples = 5210<br/>value = [2754, 2456]<br/>class = - 50000>] ;
+4 -> 6 ;
+7 [label=<gini = 0.094<br/>samples = 42728<br/>value = [40611, 2117]<br/>class = - 50000>] ;
+3 -> 7 ;
+8 [label=<gini = 0.4<br/>samples = 2650<br/>value = [733, 1917]<br/>class = 50000+>] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+}
