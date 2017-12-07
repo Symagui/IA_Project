@@ -43,7 +43,7 @@ class Computation(Thread):
 
 	def run(self):
 		global precisions
-		precision = getPrecision(self.max_depth, self.min_impurity_decrease)		
+		precision = getPrecision(self.max_depth, self.min_impurity_decrease)
 		ax.scatter(self.max_depth, self.min_impurity_decrease, precision)
 		precisions[self.i] = precision
 		print(self.max_depth, "; ", self.min_impurity_decrease, " done")
@@ -84,6 +84,7 @@ precision_final = 0
 i = 0
 for max_depth in np.arange(1, 10) :
 	for min_impurity_decrease in np.arange(0, 0.0001, 0.00001) :
+		ax.scatter(max_depth, min_impurity_decrease, precisions[i])
 		if (precisions[i] > precision_final) :
 			precision_final = precisions[i]
 			max_depth_final = max_depth
@@ -94,23 +95,4 @@ print("Precision : ", precision_final)
 print("Max depth : ", max_depth_final)
 print("Min impurity decrease : ", min_impurity_decrease_final)
 
-"""max_depth_final = 0
-min_impurity_decrease_final = 0
-precision_final = 0
-
-for max_depth in np.arange(1, 10) :
-	for min_impurity_decrease in np.arange(0, 0.01, 0.001) :
-		precision = getPrecision(max_depth, min_impurity_decrease)		
-		ax.scatter(max_depth, min_impurity_decrease, precision)
-		if (precision > precision_final) :
-			precision_final = precision
-			max_depth_final = max_depth
-			min_impurity_decrease_final = min_impurity_decrease
-		print(max_depth, "; ", min_impurity_decrease, " done")
-
-print("Precision : ", precision_final)
-print("Max depth : ", max_depth_final)
-print("Min impurity decrease : ", min_impurity_decrease_final)
-plt.show()"""
-
-
+plt.show()

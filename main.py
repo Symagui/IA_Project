@@ -25,8 +25,8 @@ formated_test = transform.transform_test(test, input_names, transformer)
 print("Formating test data - End")
 print("Training the decision tree - Start")
 
-clf = tree.DecisionTreeClassifier(max_depth = 10,
-                                  min_impurity_decrease = 0.003,
+clf = tree.DecisionTreeClassifier(max_depth = 7,
+                                  min_impurity_decrease = 0.00006,
                                   )
 
 clf = clf.fit(formated_input, output)
@@ -74,5 +74,3 @@ dot_data = tree.export_graphviz(clf, out_file = None,
 
 graph = graphviz.Source(dot_data, format='png')
 graph.render("tree", view=True)
-
-
